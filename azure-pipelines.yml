@@ -13,7 +13,25 @@ variables:
   anyTfChanges: false
 
 steps:
-
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'azurermjk-spn'
+    scriptType: 'ps'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      $resourcegroup = "sreekanthdev"
+      $location = "eastus2"
+      $storage_account_name = "sreekanthdev"
+      $container_name = "sreekanthdev"
+      
+      #Create Resource Group
+      New-AzureRmResourceGroup -Name "$resourcegroup" -Location "$location"
+        
+      #Create Storage Account
+      New-AzureRmStorageAccount -ResourceGroupName "$resourcegroup" -AccountName "$storage_account_name" -Location "$location" -SkuName Standard_LRS
+        
+      #Create Storage Container
+      New-AzureRmStorageContainer -ResourceGroupName "$resourcegroup" -AccountName "$storage_account_name" -ContainerName "$container_name"
 - task: TerraformInstaller@0
   displayName: install Terraform v0.12.28
   inputs:
